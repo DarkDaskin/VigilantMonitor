@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using ReactiveUI;
 
 namespace VigilantMonitor
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
-    public partial class App : Application
+    public partial class App
     {
+        private readonly AutoSuspendHelper _autoSuspendHelper;
+
+        public App()
+        {
+            _autoSuspendHelper = new AutoSuspendHelper(this);
+            RxApp.SuspensionHost.CreateNewAppState = () => new MainViewModel();
+            RxApp.SuspensionHost.SetupDefaultSuspendResume(new JsonSuspensionDriver<MainViewModel>());
+        }
     }
 }
