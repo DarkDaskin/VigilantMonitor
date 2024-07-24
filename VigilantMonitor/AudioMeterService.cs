@@ -9,7 +9,30 @@ namespace VigilantMonitor
         private readonly MMDeviceEnumerator _deviceEnumerator = new();
         private MMDevice _device;
 
-        public float CurrentVolume => _device.AudioMeterInformation.MasterPeakValue;
+        public float? CurrentVolume
+        {
+            get 
+            {
+                // Retry once
+                for (var attempt = 0; ; attempt++)
+                {
+                    try
+                    {
+                        return _device.AudioMeterInformation.MasterPeakValue;
+                    }
+                    catch (Exception)
+                    {
+                        if (attempt > 0)
+                            break;
+
+                        _device.Dispose();
+                        _device = _deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+                    }                    
+                }
+
+                return null;
+            }
+        }
 
         public AudioMeterService()
         {
@@ -48,7 +71,5 @@ namespace VigilantMonitor
         void IMMNotificationClient.OnPropertyValueChanged(string pwstrDeviceId, PropertyKey key)
         {
         }
-
-
     }
 }
