@@ -21,7 +21,9 @@ public class JsonSuspensionDriver<TState> : ISuspensionDriver
         return Observable.FromAsync(async () =>
         {
             await using var stream = _storage.OpenFile(FileName, FileMode.OpenOrCreate);
-            using var jsonReader = new JsonTextReader(new StreamReader(stream));
+            if (stream.Length == 0)
+                return new TState();
+            await using var jsonReader = new JsonTextReader(new StreamReader(stream));
             var state = _serializer.Deserialize<TState>(jsonReader);
             return state ?? new TState();
         });
@@ -32,7 +34,7 @@ public class JsonSuspensionDriver<TState> : ISuspensionDriver
         return Observable.FromAsync(async () =>
         {
             await using var stream = _storage.OpenFile(FileName, FileMode.OpenOrCreate);
-            using var jsonWriter = new JsonTextWriter(new StreamWriter(stream));
+            await using var jsonWriter = new JsonTextWriter(new StreamWriter(stream));
             _serializer.Serialize(jsonWriter, state);
         });
     }
