@@ -24,6 +24,9 @@ public class MainViewModelBase : ReactiveValidationObject
     public float MinDuration { get; set; }
 
     [Reactive]
+    public bool RunAtWindowsStartup { get; set; }
+
+    [Reactive]
     public bool HasConversionError { get; set; }
 
     [Reactive]
@@ -52,10 +55,16 @@ public class MainViewModel : MainViewModelBase
 {
     private readonly AudioMeterService _audioMeterService = new();
     private readonly DisplayLockService _displayLockService = new();
+    private readonly AutoRunService _autoRunService = new();
 
     public MainViewModel()
     {
         WindowVisibility = Visibility.Hidden;
+
+        RunAtWindowsStartup = _autoRunService.IsEnabled;
+        this.ObservableForProperty(vm => vm.RunAtWindowsStartup)
+            .DistinctUntilChanged()
+            .Subscribe(oc => _autoRunService.IsEnabled = oc.Value);
 
         var scheduler = new SynchronizationContextScheduler(
             SynchronizationContext.Current ?? throw new InvalidOperationException("A synchronization context is required."));
