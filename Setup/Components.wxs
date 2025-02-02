@@ -1,15 +1,17 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <?include Common.wxi ?>
+  
   <Fragment>
-    <Property Id="ExeName" Value="$(var.VigilantMonitor.TargetName).exe" />
+    <Property Id="ExeName" Value="$(var.AppExeTargetFile)" />
     
     <ComponentGroup Id="MainComponents" Directory="APPLICATIONFOLDER">
       <Files Include="$(var.VigilantMonitor.TargetDir)**">
         <Exclude Files="$(var.VigilantMonitor.TargetDir)**\*.exe" />
         <Exclude Files="$(var.VigilantMonitor.TargetDir)**\*.pdb" />
       </Files>
-      <File Id="AppExeFile" Source="$(var.VigilantMonitor.TargetDir)$(var.VigilantMonitor.TargetName).exe" KeyPath="yes">
+      <File Id="AppExeFile" Source="$(var.AppExeSourceFile)" Name="$(var.AppExeTargetFile)" KeyPath="yes">
         <Shortcut Directory="AppShortcutFolder" Name="!(bind.Property.ProductName)" Advertise="yes">
-          <Icon Id="$(var.VigilantMonitor.TargetName).exe" SourceFile="$(var.VigilantMonitor.TargetDir)$(var.VigilantMonitor.TargetName).exe" />
+          <Icon Id="$(var.AppExeTargetFile)" SourceFile="$(var.AppExeSourceFile)" />
         </Shortcut>
       </File>
       <Component Id="RemoveAppShortcutFolder" Guid="09d98e1d-a102-479f-b7a4-f13e80602bae">

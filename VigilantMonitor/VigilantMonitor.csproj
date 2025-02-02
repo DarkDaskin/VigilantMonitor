@@ -4,6 +4,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
     <RollForward>Major</RollForward>
+    <UseAppHost>false</UseAppHost>
     <UseWPF>true</UseWPF>
     <Nullable>enable</Nullable>
     <ApplicationIcon>icon.ico</ApplicationIcon>
@@ -30,5 +31,40 @@
     <PackageReference Include="ReactiveUI.WPF" Version="18.4.1" />
     <PackageReference Include="System.Reactive" Version="6.0.1" />
   </ItemGroup>
+
+  <Target Name="BuildAppHosts" AfterTargets="AfterBuild">
+    <PropertyGroup>
+      <_NativeProgramFiles>$(ProgramW6432)</_NativeProgramFiles>
+      <_NativeProgramFiles Condition="'$(_NativeProgramFiles)' == ''">$(ProgramFiles)</_NativeProgramFiles>
+      <_WindowsGraphicalUserInterface>false</_WindowsGraphicalUserInterface>
+      <_WindowsGraphicalUserInterface Condition="'$(OutputType)'=='WinExe'">true</_WindowsGraphicalUserInterface>
+      <_TargetFrameworkVersionNumber>$(TargetFrameworkVersion.TrimStart('vV'))</_TargetFrameworkVersionNumber>
+    </PropertyGroup>
+    <ItemGroup>
+      <_Platform Include="x86;x64;arm64" />
+      <_AppHost Include="$(_NativeProgramFiles)\dotnet\packs\Microsoft.NETCore.App.Host.win-%(_Platform.Identity)\$(_TargetFrameworkVersionNumber).*\runtimes\win-%(_Platform.Identity)\native\apphost.exe" Platform="%(_Platform.Identity)" />
+    </ItemGroup>
+    <PropertyGroup>
+      <!-- ReSharper disable UnknownMetadata -->
+      <_LatestAppHost_x86 Condition="'%(_AppHost.Platform)' == 'x86'">%(_AppHost.FullPath)</_LatestAppHost_x86>
+      <_LatestAppHost_x64 Condition="'%(_AppHost.Platform)' == 'x64'">%(_AppHost.FullPath)</_LatestAppHost_x64>
+      <_LatestAppHost_arm64 Condition="'%(_AppHost.Platform)' == 'arm64'">%(_AppHost.FullPath)</_LatestAppHost_arm64>
+      <!-- ReSharper restore UnknownMetadata -->
+    </PropertyGroup>
+    <ItemGroup>
+      <_LatestAppHost Include="$(_LatestAppHost_x86)" Platform="x86" />
+      <_LatestAppHost Include="$(_LatestAppHost_x64)" Platform="x64" />
+      <_LatestAppHost Include="$(_LatestAppHost_arm64)" Platform="arm64" />
+    </ItemGroup>
+    <!-- ReSharper disable UnknownTask -->
+    <!-- ReSharper disable UnknownMetadata -->
+    <CreateAppHost AppHostSourcePath="%(_LatestAppHost.FullPath)" 
+                   AppBinaryName="$(AssemblyName).dll" 
+                   WindowsGraphicalUserInterface="$(_WindowsGraphicalUserInterface)" 
+                   AppHostDestinationPath="$(TargetDir)\$(AssemblyName)_%(_LatestAppHost.Platform).exe" 
+                   IntermediateAssembly="$(IntermediateOutputPath)\$(AssemblyName).dll" />
+    <!-- ReSharper restore UnknownTask -->
+    <!-- ReSharper restore UnknownMetadata -->
+  </Target>
 
 </Project>

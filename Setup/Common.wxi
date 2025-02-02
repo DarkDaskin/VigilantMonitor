@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <?if $(var.Platform) = x86 ?>
+    <?define ProductUpgradeCode = "2278b439-b5d3-478f-86a3-d644c4d47f3b" ?>
+    <?define Win64 = "no" ?>
+    <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
+  <?elseif $(var.Platform) = x64 ?>
+    <?define ProductUpgradeCode = "2278b439-b5d3-478f-86a3-cdfb6d3454d7" ?>
+    <?define Win64 = "yes" ?>
+    <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
+  <?elseif $(var.Platform) = ARM64 ?>
+    <?define ProductUpgradeCode = "2278b439-b5d3-478f-86a3-70d5a64ecd8e" ?>
+    <?define Win64 = "yes" ?>
+    <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
+  <?else ?>
+    <?error Unsupported platform. ?>
+  <?endif ?>
+  <?define AppExeSourceFile = "$(var.VigilantMonitor.TargetDir)$(var.VigilantMonitor.TargetName)_$(var.Platform).exe" ?>
+  <?define AppExeTargetFile = "$(var.VigilantMonitor.TargetName).exe" ?>
+</Include>

@@ -1,12 +1,14 @@
 ﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
-  <Package Name="Vigilant Monitor" Manufacturer="Dark Daskin" Version="!(bind.FileVersion.AppExeFile)" UpgradeCode="2278b439-b5d3-478f-86a3-cdfb6d3454d7" Compressed="yes">
+  <?include Common.wxi ?>
+
+  <Package Name="Vigilant Monitor" Manufacturer="Dark Daskin" Version="!(bind.FileVersion.AppExeFile)" UpgradeCode="$(var.ProductUpgradeCode)" Compressed="yes" InstallerVersion="500">
     <MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeError)" />
 
     <MediaTemplate EmbedCab="yes" />
 
     <WixVariable Id="WixUILicenseRtf" Value="LICENSE.rtf" />
 
-    <Property Id="ARPPRODUCTICON" Value="$(var.VigilantMonitor.TargetName).exe" />
+    <Property Id="ARPPRODUCTICON" Value="$(var.AppExeTargetFile)" />
     
     <Feature Id="Main" Title="!(bind.Property.ProductName)" AllowAbsent="no" AllowAdvertise="no" Display="expand">
       <ComponentGroupRef Id="MainComponents" />
@@ -29,7 +31,7 @@
     </Property>
 
     <!-- Workaround Wix Bug: https://github.com/wixtoolset/issues/issues/2165 -->
-    <CustomAction Id="Overwrite_WixSetDefaultPerMachineFolder" Property="WixPerMachineFolder" Value="[ProgramFiles64Folder][ApplicationFolderName]" Execute="immediate" />
+    <CustomAction Id="Overwrite_WixSetDefaultPerMachineFolder" Property="WixPerMachineFolder" Value="[$(var.PlatformProgramFilesFolder)][ApplicationFolderName]" Execute="immediate" />
     <InstallUISequence>
       <Custom Action="Overwrite_WixSetDefaultPerMachineFolder" After="WixSetDefaultPerMachineFolder" />
     </InstallUISequence>

@@ -1,6 +1,8 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <?include Common.wxi ?>
+  
   <Fragment>    
-    <StandardDirectory Id="ProgramFiles64Folder">
+    <StandardDirectory Id="$(var.PlatformProgramFilesFolder)">
       <Directory Id="APPLICATIONFOLDER" Name="!(bind.Property.ProductName)" />
     </StandardDirectory>
     <StandardDirectory Id="ProgramMenuFolder">

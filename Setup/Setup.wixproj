@@ -1,7 +1,10 @@
 ﻿<Project Sdk="WixToolset.Sdk/5.0.2">
   <PropertyGroup>
-    <OutputName>VigilantMonitorSetup</OutputName>
+    <OutputName>VigilantMonitorSetup_$(Platform)</OutputName>
   </PropertyGroup>
+  <ItemGroup>
+    <Content Include="Common.wxi" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VigilantMonitor\VigilantMonitor.csproj" />
   </ItemGroup>
