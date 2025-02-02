@@ -36,6 +36,7 @@ jobs:
         path: Setup/bin/${{ matrix.platform }}/Release/en-US/VigilantMonitorSetup_${{ matrix.platform }}.msi
 
   release:
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
