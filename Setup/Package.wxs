@@ -8,7 +8,7 @@
 
     <WixVariable Id="WixUILicenseRtf" Value="LICENSE.rtf" />
 
-    <Property Id="ARPPRODUCTICON" Value="$(var.AppExeTargetFile)" />
+    <Property Id="ARPPRODUCTICON" Value="icon.ico" />
     
     <Feature Id="Main" Title="!(bind.Property.ProductName)" AllowAbsent="no" AllowAdvertise="no" Display="expand">
       <ComponentGroupRef Id="MainComponents" />

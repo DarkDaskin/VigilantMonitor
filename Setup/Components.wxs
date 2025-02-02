@@ -11,7 +11,7 @@
       </Files>
       <File Id="AppExeFile" Source="$(var.AppExeSourceFile)" Name="$(var.AppExeTargetFile)" KeyPath="yes">
         <Shortcut Directory="AppShortcutFolder" Name="!(bind.Property.ProductName)" Advertise="yes">
-          <Icon Id="$(var.AppExeTargetFile)" SourceFile="$(var.AppExeSourceFile)" />
+          <Icon Id="icon.ico" SourceFile="$(var.VigilantMonitor.ProjectDir)icon.ico" />
         </Shortcut>
       </File>
       <Component Id="RemoveAppShortcutFolder" Guid="09d98e1d-a102-479f-b7a4-f13e80602bae">
