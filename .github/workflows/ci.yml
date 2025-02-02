@@ -34,4 +34,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: VigilantMonitorSetup_${{ matrix.platform }}.msi
-        path: Setup/bin/${{ matrix.targetplatform }}/Release/en-US/VigilantMonitorSetup_${{ matrix.platform }}.msi
+        path: Setup/bin/${{ matrix.platform }}/Release/en-US/VigilantMonitorSetup_${{ matrix.platform }}.msi
