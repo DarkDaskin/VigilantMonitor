@@ -1,0 +1,26 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Fragment>
+    <Property Id="ExeName" Value="$(var.VigilantMonitor.TargetName).exe" />
+    
+    <ComponentGroup Id="MainComponents" Directory="APPLICATIONFOLDER">
+      <Files Include="$(var.VigilantMonitor.TargetDir)**">
+        <Exclude Files="$(var.VigilantMonitor.TargetDir)**\*.exe" />
+        <Exclude Files="$(var.VigilantMonitor.TargetDir)**\*.pdb" />
+      </Files>
+      <File Id="AppExeFile" Source="$(var.VigilantMonitor.TargetDir)$(var.VigilantMonitor.TargetName).exe" KeyPath="yes">
+        <Shortcut Directory="AppShortcutFolder" Name="!(bind.Property.ProductName)" Advertise="yes">
+          <Icon Id="$(var.VigilantMonitor.TargetName).exe" SourceFile="$(var.VigilantMonitor.TargetDir)$(var.VigilantMonitor.TargetName).exe" />
+        </Shortcut>
+      </File>
+      <Component Id="RemoveAppShortcutFolder" Guid="09d98e1d-a102-479f-b7a4-f13e80602bae">
+        <RemoveFolder Directory="AppShortcutFolder" On="uninstall" />
+      </Component>
+    </ComponentGroup>
+
+    <ComponentGroup Id="AutoRunComponents">
+      <Component>
+        <RegistryValue Type="string" Root="HKCU" Key="Software\Microsoft\Windows\CurrentVersion\Run" Name="VigilantMonitor" Value="[APPLICATIONFOLDER][ExeName]" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>

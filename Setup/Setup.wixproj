@@ -1,0 +1,12 @@
+﻿<Project Sdk="WixToolset.Sdk/5.0.2">
+  <PropertyGroup>
+    <OutputName>VigilantMonitorSetup</OutputName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VigilantMonitor\VigilantMonitor.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="WixToolset.UI.wixext" Version="5.0.2" />
+    <PackageReference Include="WixToolset.Util.wixext" Version="5.0.2" />
+  </ItemGroup>
+</Project>

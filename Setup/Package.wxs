@@ -1,0 +1,60 @@
+﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
+  <Package Name="Vigilant Monitor" Manufacturer="Dark Daskin" Version="!(bind.FileVersion.AppExeFile)" UpgradeCode="2278b439-b5d3-478f-86a3-cdfb6d3454d7" Compressed="yes">
+    <MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeError)" />
+
+    <MediaTemplate EmbedCab="yes" />
+
+    <WixVariable Id="WixUILicenseRtf" Value="LICENSE.rtf" />
+
+    <Property Id="ARPPRODUCTICON" Value="$(var.VigilantMonitor.TargetName).exe" />
+    
+    <Feature Id="Main" Title="!(bind.Property.ProductName)" AllowAbsent="no" AllowAdvertise="no" Display="expand">
+      <ComponentGroupRef Id="MainComponents" />
+      
+      <Feature Id="AutoRun" Title="Run at Windows startup" AllowAdvertise="no">
+        <ComponentGroupRef Id="AutoRunComponents" />
+      </Feature>      
+    </Feature>
+
+    <Property Id="ApplicationFolderName" Value="!(bind.Property.ProductName)" />
+    <Property Id="WixAppFolder" Value="WixPerMachineFolder" />
+    <UIRef Id="WixUI_Advanced_X64" />
+
+    <Property Id="APPLICATIONFOLDER" Secure="yes">
+      <RegistrySearch Id="FindInstallLocation"
+          Root="HKLM"
+          Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[WIX_UPGRADE_DETECTED]"
+          Name="InstallLocation"
+          Type="raw" />
+    </Property>
+
+    <!-- Workaround Wix Bug: https://github.com/wixtoolset/issues/issues/2165 -->
+    <CustomAction Id="Overwrite_WixSetDefaultPerMachineFolder" Property="WixPerMachineFolder" Value="[ProgramFiles64Folder][ApplicationFolderName]" Execute="immediate" />
+    <InstallUISequence>
+      <Custom Action="Overwrite_WixSetDefaultPerMachineFolder" After="WixSetDefaultPerMachineFolder" />
+    </InstallUISequence>
+    <InstallExecuteSequence>
+      <Custom Action="Overwrite_WixSetDefaultPerMachineFolder" After="WixSetDefaultPerMachineFolder" />
+    </InstallExecuteSequence>
+
+    <SetProperty Id="ARPINSTALLLOCATION" Value="[APPLICATIONFOLDER]" After="CostFinalize" />
+
+    <util:CloseApplication CloseMessage="yes" Target="[ExeName]" RebootPrompt="no" />
+
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1" />
+    <UI>
+      <Publish Dialog="ExitDialog" 
+               Control="Finish" 
+               Event="DoAction" 
+               Value="LaunchApplication"
+               Condition="WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 AND NOT Installed" />
+    </UI>
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Launch !(bind.Property.ProductName)" />
+    <Property Id="WixShellExecTarget" Value="[#AppExeFile]" />
+    <CustomAction Id="LaunchApplication" 
+                  BinaryRef="Wix4UtilCA_$(sys.BUILDARCHSHORT)"
+                  DllEntry="WixShellExec"
+                  Impersonate="yes" />
+
+  </Package>
+</Wix>
