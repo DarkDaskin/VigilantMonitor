@@ -1,13 +1,17 @@
 ﻿using NAudio.CoreAudioApi;
 using NAudio.CoreAudioApi.Interfaces;
 using System;
+using System.Runtime.InteropServices;
 
 namespace VigilantMonitor
 {
     public sealed class AudioMeterService : IDisposable, IMMNotificationClient
     {
+        private const int ErrorElementNotFound = unchecked((int)0x80070490);
+
+
         private readonly MMDeviceEnumerator _deviceEnumerator = new();
-        private MMDevice _device;
+        private MMDevice? _device;
 
         public float? CurrentVolume
         {
@@ -18,15 +22,15 @@ namespace VigilantMonitor
                 {
                     try
                     {
-                        return _device.AudioMeterInformation.MasterPeakValue;
+                        return _device?.AudioMeterInformation.MasterPeakValue;
                     }
                     catch (Exception)
                     {
                         if (attempt > 0)
                             break;
 
-                        _device.Dispose();
-                        _device = _deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+                        _device?.Dispose();
+                        _device = GetDefaultAudioEndpoint();
                     }                    
                 }
 
@@ -37,12 +41,25 @@ namespace VigilantMonitor
         public AudioMeterService()
         {
             _deviceEnumerator.RegisterEndpointNotificationCallback(this);
-            _device = _deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+            _device = GetDefaultAudioEndpoint();
         }
+
+        private MMDevice? GetDefaultAudioEndpoint()
+        {
+            try
+            {
+                return _deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+            }
+            catch (COMException exception) when (exception.ErrorCode == ErrorElementNotFound)
+            {
+                return null;
+            }
+        }
+
 
         public void Dispose()
         {
-            _device.Dispose();
+            _device?.Dispose();
             _deviceEnumerator.UnregisterEndpointNotificationCallback(this);
             _deviceEnumerator.Dispose();
         }
@@ -63,7 +80,7 @@ namespace VigilantMonitor
         {
             if (flow == DataFlow.Render && role == Role.Multimedia)
             {
-                _device.Dispose();
+                _device?.Dispose();
                 _device = _deviceEnumerator.GetDevice(defaultDeviceId);
             }
         }
