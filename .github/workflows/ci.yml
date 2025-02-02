@@ -1,0 +1,37 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: .NET
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    strategy:
+        matrix:
+          platform: [x86, x64, ARM64]
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 6.0.x
+    - name: Setup WiX
+      run: dotnet tool install --global wix
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore -p:Platform=${{ matrix.platform }} -c Release
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: VigilantMonitorSetup_${{ matrix.platform }}.msi
+        path: Setup/bin/${{ matrix.targetplatform }}/Release/en-US/VigilantMonitorSetup_${{ matrix.platform }}.msi
